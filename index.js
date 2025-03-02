@@ -1453,6 +1453,9 @@ const now = playerReport.attacks.map(attack => {
 
 let attackIntervals = [];  // Mảng lưu trữ các vòng lặp tấn công và thông tin người tấn công
 
+// Mảng để lưu trữ tất cả các setInterval báo cáo
+let reportIntervals = [];
+
 function startBossFight(targetPlayer = null, a = null) {
   // Kiểm tra nếu có mục tiêu, nếu không thì chọn boss làm mục tiêu mặc định
   let target = targetPlayer || boss;  // Mặc định chọn boss làm mục tiêu nếu không có player mục tiêu
@@ -1468,7 +1471,10 @@ function startBossFight(targetPlayer = null, a = null) {
     if (target.hp <= 0) {  // Kiểm tra nếu mục tiêu (boss hoặc player) đã chết
       displayDamageReport();  // Gửi báo cáo ngay lập tức khi mục tiêu chết
       sendMessage(-4676989627, `${target.name} đã chết!`, { parse_mode: 'HTML' });
-      clearInterval(reportInterval);  // Dừng báo cáo khi mục tiêu chết
+
+      // Dừng tất cả các báo cáo liên quan đến mục tiêu này
+      clearAllReports();  // Gọi hàm dừng tất cả báo cáo
+      clearInterval(reportInterval);  // Dừng vòng lặp báo cáo hiện tại
 
       // Dừng tất cả các vòng lặp tấn công nếu boss chết
       if (target.name === "big boss" && target.hp <= 0) {
@@ -1483,10 +1489,13 @@ function startBossFight(targetPlayer = null, a = null) {
       return;  // Dừng hàm, không tiếp tục thực hiện
     } else {
       // Nếu mục tiêu còn sống, tiếp tục báo cáo
-      displayDamageReport();  
+      displayDamageReport();
       sendFourButtons(-4676989627);
     }
-  }, 8000);  // Mỗi 5 giây gọi báo cáo
+  }, 5000);  // Mỗi 5 giây gọi báo cáo
+
+  // Lưu ID của vòng lặp báo cáo vào mảng
+  reportIntervals.push(reportInterval);
 
   // Xử lý các tấn công của người chơi hoặc tất cả người chơi
   if (a && target.boss === 0) {
@@ -1498,12 +1507,20 @@ function startBossFight(targetPlayer = null, a = null) {
   }
 }
 
+// Hàm dừng tất cả các vòng lặp báo cáo
+function clearAllReports() {
+  reportIntervals.forEach(intervalId => clearInterval(intervalId));
+  reportIntervals = [];  // Xóa mảng chứa các vòng lặp báo cáo
+  console.log("Đã dừng tất cả các vòng lặp báo cáo.");
+}
+
 // Hàm dừng tất cả các vòng lặp tấn công
 function stopAllAttacks() {
   attackIntervals.forEach(intervalObj => clearInterval(intervalObj.intervalId));
   attackIntervals = [];  // Xóa mảng chứa các vòng lặp tấn công
   console.log("Boss đã chết, dừng tất cả các vòng lặp tấn công.");
 }
+
 
 // Hàm dừng tấn công của một người chơi cụ thể
 function stopAttackOfPlayer(player) {
