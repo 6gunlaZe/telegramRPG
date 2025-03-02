@@ -1539,7 +1539,6 @@ function stopAttackOfPlayer(player) {
   }
 }
 
-// Hàm xử lý tấn công của một người chơi
 function handlePlayerAttack(player, target) {
   // Kiểm tra xem đã có vòng lặp tấn công cho player chưa
   const existingInterval = attackIntervals.find(intervalObj => intervalObj.a === player);
@@ -1554,6 +1553,12 @@ function handlePlayerAttack(player, target) {
 
   // Tấn công theo tốc độ đánh của player
   const attackInterval = setInterval(() => {
+    if (target.hp <= 0) {  // Kiểm tra nếu mục tiêu đã chết
+      clearInterval(attackInterval);  // Dừng vòng lặp tấn công nếu mục tiêu đã chết
+      console.log(`${target.name} đã chết, dừng tấn công.`);
+      return;  // Dừng vòng lặp tấn công
+    }
+
     recordPlayerAttack(player, target); // Ghi nhận sát thương khi tấn công
   }, attackSpeed * 1000);  // Tốc độ đánh tính theo giây
 
@@ -1564,7 +1569,15 @@ function handlePlayerAttack(player, target) {
 
 
 
+
+
 function handleAllPlayersAttack(target) {
+  // Kiểm tra nếu mục tiêu đã chết trước khi bắt đầu
+  if (target.hp <= 0) {
+    console.log(`${target.name} đã chết, không thể tấn công.`);
+    return;  // Dừng hàm nếu mục tiêu đã chết
+  }
+
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
 
@@ -1578,6 +1591,13 @@ function handleAllPlayersAttack(target) {
 
     // Tấn công theo tốc độ đánh của player
     const attackInterval = setInterval(() => {
+      // Kiểm tra lại HP của mục tiêu trước khi ghi nhận sát thương
+      if (target.hp <= 0) {
+        clearInterval(attackInterval);  // Dừng vòng lặp tấn công nếu mục tiêu đã chết
+        console.log(`${target.name} đã chết, dừng tấn công.`);
+        return;  // Thoát khỏi vòng lặp nếu mục tiêu chết
+      }
+
       recordPlayerAttack(player, target); // Ghi nhận sát thương khi tấn công
     }, attackSpeed * 1000);  // Tốc độ đánh tính theo giây
 
@@ -1586,6 +1606,7 @@ function handleAllPlayersAttack(target) {
     console.log(`${player.name} đang tấn công ${target.name}`);
   }
 }
+
 
 
 
