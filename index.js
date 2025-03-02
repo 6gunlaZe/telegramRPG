@@ -475,7 +475,7 @@ function sendMessage(chatId, text, reply_markup = {}) {
   let formattedMessage = text.replace(/\n/g, '<br>');
   // Gửi thông điệp đã được thay thế
   io.emit('chatMessage', formattedMessage);  // Sẽ gửi HTML với thẻ <br> cho xuống dòng
-
+  if ( chatId == -4676989627)return
   console.log('Sending message:', payload);  // Debug log: Xem payload
 
   fetch(url, {
@@ -1570,48 +1570,61 @@ function handlePlayerAttack(player, target) {
 
 
 
+function displayDamageReportplayer(player, target) {
+  // Tính toán phần trăm máu của boss
+  const bossHPPercentage = (boss.hp / 20000) * 100;  // 20000 là HP ban đầu của boss
+  const targetPercentage = (target.hp / target.hp_max) * 100;  
+  
+  // Chỉ hiển thị báo cáo cho người chơi cụ thể
+  const targetPlayerId = player.id; // Giả sử bạn muốn hiển thị báo cáo cho người chơi này
 
-function handleAllPlayersAttack(target) {
-  // Kiểm tra nếu mục tiêu đã chết trước khi bắt đầu
-  if (target.hp <= 0) {
-    console.log(`${target.name} đã chết, không thể tấn công.`);
-    return;  // Dừng hàm nếu mục tiêu đã chết
-  }
+  // Lọc ra báo cáo của người chơi cần hiển thị
+  const playerReport = playerDamageReport.find(playerReport => playerReport.id === targetPlayerId);
 
-  for (let i = 0; i < players.length; i++) {
-    const player = players[i];
+  if (playerReport) {
+    // Lấy tên người chơi và HP từ players
+    const player = players.find(p => p.id === playerReport.id);
+    const playerName = player.name;  // Tên người chơi
+    const playerHP = player.hp;  // Máu hiện tại của người chơi
+    const playerMaxHP = player.hp_max;  // Máu tối đa của người chơi
+    const playerHPPercentage = (playerHP / playerMaxHP) * 100;  // Phần trăm máu của người chơi
 
-    // Nếu player đã có vòng lặp tấn công trong attackIntervals thì bỏ qua
-    if (attackIntervals.some(intervalObj => intervalObj.a === player)) {
-      continue;  // Bỏ qua vòng lặp này nếu player đang tấn công
-    }
+    // Căn chỉnh tên và sát thương cho đều đặn và thêm biểu tượng cho tên và tổng sát thương
+    const name = `🎮 ${playerName} (${playerHPPercentage.toFixed(0)}%)`.padEnd(25, ' ');  // Thêm phần trăm máu người chơi vào tên
+    const total = `💥 ${playerReport.totalDamage.toString().padStart(12, ' ')}`;  // Thêm biểu tượng cho tổng sát thương
 
-    const attackSpeed = player['attach-speed'];  // Tốc độ đánh của player
-    const damage = calculatePlayerDamage(player, target); // Tính sát thương mỗi đòn đánh của player
+    // Hiển thị từng đòn đánh trong giây hiện tại (bao gồm cả chí mạng và không chí mạng)
+    const now = playerReport.attacks.map(attack => {
+      const damage = attack.damage.toFixed(0);  // Làm tròn sát thương
+      // Thêm emoji ⚡ khi chí mạng
+      const critSymbol = attack.isCrit ? `${damage} ⚡` : damage;
 
-    // Tấn công theo tốc độ đánh của player
-    const attackInterval = setInterval(() => {
-      // Kiểm tra lại HP của mục tiêu trước khi ghi nhận sát thương
-      if (target.hp <= 0) {
-        clearInterval(attackInterval);  // Dừng vòng lặp tấn công nếu mục tiêu đã chết
-        console.log(`${target.name} đã chết, dừng tấn công.`);
-        return;  // Thoát khỏi vòng lặp nếu mục tiêu chết
+      // Hiển thị các emoji tùy theo giá trị playertarget
+      let targetEmojis = '';
+      if (attack.playertarget === 1) {
+        targetEmojis = '👦🏻';  // Emoji cho playertarget = 1
+      } else if (attack.playertarget === 2) {
+        targetEmojis = '🐐';  // Emoji cho playertarget = 2
+      } else if (attack.playertarget === 3) {
+        targetEmojis = '🐣';  // Emoji cho playertarget = 3
       }
 
-      recordPlayerAttack(player, target); // Ghi nhận sát thương khi tấn công
-    }, attackSpeed * 1000);  // Tốc độ đánh tính theo giây
+      // Kết hợp cả chí mạng và emoji playertarget
+      return `${critSymbol} ${targetEmojis}`;
+    }).join(', ').padStart(35, ' ');  // Hiển thị tất cả các đòn tấn công
 
-    // Lưu thông tin vòng lặp tấn công cho tất cả player
-    attackIntervals.push({ intervalId: attackInterval, a: player });
-    console.log(`${player.name} đang tấn công ${target.name}`);
+    // Thêm dòng vào báo cáo
+    let report = '';
+    report += `| ${name} | ${total} | ${now} |\n`;
+    playerReport.attacks = [];  // Reset attacks cho lần tiếp theo
+
+    report += '===========================\n';
+    sendMessage(-4676989627, report, { parse_mode: 'HTML' });  // Gửi báo cáo qua Telegram bot với định dạng HTML
+    console.log(report);  // Hiển thị báo cáo
+  } else {
+    console.log("Không tìm thấy báo cáo cho người chơi này.");
   }
 }
-
-
-
-
-
-
 
 
 
