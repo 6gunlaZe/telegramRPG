@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
         };
         // Thực thi hành động tùy chọn
         handleOption(option);
-        io.emit('chatMessage', `User selected: ${option}`);
+       // io.emit('chatMessage', `User selected: ${option}`);
       } else {
         socket.emit('chatMessage', 'Invalid option.');
       }
@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
       if (optionGroups[userGroup].includes(option)) {
         // Nếu tùy chọn thuộc nhóm người dùng đã chọn
         handleOption(option);  // Luôn thực hiện tác vụ mỗi lần chọn
-        io.emit('chatMessage', `User selected: ${option}`);
+       // io.emit('chatMessage', `User selected: ${option}`);
       } else {
         socket.emit('chatMessage', `You can only select options from the same group: ${userGroup}`);
       }
@@ -1382,10 +1382,12 @@ function recordPlayerAttack(player, target) {
   playerReport.attacks.push({ damage, isCrit, playertarget });  // Lưu playertarget cùng với thông tin đòn đánh
   playerReport.totalDamage += damage;
   checkSkillExpirationAndRemove(player);
-  displayDamageReportplayer(player, target)
   if (target.hp > 0) {
     target.hp -= damage;
+    
   }
+    displayDamageReportplayer(player, target)
+
 }
 
 
@@ -1498,7 +1500,19 @@ function displayDamageReportplayer(player, target) {
     const targetHPPercentage = (targetHP / targetMaxHP) * 100;  // Phần trăm máu của target
 
     // Căn chỉnh tên và sát thương cho đều đặn và thêm biểu tượng cho tên và tổng sát thương
-    const name = `🎮 ${playerName} (${playerHPPercentage.toFixed(0)}%)`.padEnd(25, ' ');  // Thêm phần trăm máu người chơi vào tên
+let name;
+    
+if (playerName === 'tien') {
+  name = "       ";  // 7 dấu cách
+} else if (playerName === 'khi') {
+  name = "--------------------->";  // 14 dấu cách
+} else {
+  name = "--------------------------------------------->";  // 21 dấu cách cho các giá trị khác
+}
+    
+    
+    
+    
     const total = `💥`;  // Thêm biểu tượng cho tổng sát thương
 
     // Hiển thị từng đòn đánh trong giây hiện tại (bao gồm cả chí mạng và không chí mạng)
@@ -1521,29 +1535,20 @@ function displayDamageReportplayer(player, target) {
       return `${critSymbol} ${targetEmojis}`;
     }).join(', ').padStart(35, ' ');  // Hiển thị tất cả các đòn tấn công
 
+    
+let checkhpp = `${'👦🏻'}   ${players[0].hp}-------|-------   ${'🐐'}   ${players[1].hp} -------  | -------  ${'🐣'}   ${players[2].hp} \n`;
+
+    
     // Xây dựng báo cáo
-    let report = '';
+    let report = checkhpp;
     report += `| ${name} | ${total}  ${now} |\n`;
 
     // Chỉ hiển thị thông tin của boss nếu target.boss === 1
-    if (target.boss === 1) {
+    
       report += `| ${'🐉 Boss HP:'.padEnd(25, ' ')} | ${targetHP.toString().padStart(12, ' ')} | ${bossHPPercentage.toFixed(0)}% |\n`;
-    }
+    
 
-    // Chỉ hiển thị thông tin của người chơi nếu target.boss === 0
-    if (target.boss === 0) {
-      // Thêm điều kiện để thay đổi emoji người chơi tùy theo thuộc tính
-      let playerEmojis = '';
-      if (target.name === 'tien') {  // Ví dụ: nếu người chơi có ID = 1
-        playerEmojis = '👦🏻';  // Emoji cho người chơi ID = 1
-      } else if (target.name === 'khi') {  // Nếu người chơi có ID = 2
-        playerEmojis = '🐐';  // Emoji cho người chơi ID = 2
-      } else {
-        playerEmojis = '🐣';  // Emoji mặc định cho những người chơi khác
-      }
 
-      report += `| ${playerEmojis}  HP:`.padEnd(25, ' ') + ` | ${playerHP.toString().padStart(12, ' ')} | ${playerHPPercentage.toFixed(0)}% |\n`;
-    }
 
     report += '===========================\n';
 
