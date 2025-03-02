@@ -140,6 +140,8 @@ function performTaskForOption1() {
 
 function performTaskForOption2() {
   console.log('Executing task for Option 2');
+    startBossFight(players[2],players[0]);
+  startBossFight(players[0],players[2]);
   io.emit('chatMessage', 'Tiến Atk Hoàng');
 }
 
@@ -151,33 +153,47 @@ function performTaskForOption3() {
 
 function performTaskForOption4() {
   console.log('Executing task for Option 4');
+    startBossFight(players[1],players[0]);
+  startBossFight(players[0],players[1]);
   io.emit('chatMessage', 'Hải Atk Tiến');
 }
 
 function performTaskForOption5() {
   console.log('Executing task for Option 5');
+    startBossFight(players[2],players[1]);
+  startBossFight(players[1],players[2]);
   io.emit('chatMessage', 'Hải Atk Hoàng');
 }
 
 function performTaskForOption6() {
   console.log('Executing task for Option 6');
+     startBossFight(boss,players[1]);
   io.emit('chatMessage', 'Hải Atk BOSS');
 }
 
 function performTaskForOption7() {
   console.log('Executing task for Option 7');
+      startBossFight(players[2],players[0]);
+  startBossFight(players[0],players[2]);
   io.emit('chatMessage', 'Hoàng Atk Tiến');
 }
 
 function performTaskForOption8() {
   console.log('Executing task for Option 8');
+  startBossFight(players[2],players[1]);
+  startBossFight(players[1],players[2]);
   io.emit('chatMessage', 'Hoàng Atk Hải');
 }
 
 function performTaskForOption9() {
   console.log('Executing task for Option 9');
+     startBossFight(boss,players[2]);
   io.emit('chatMessage', 'Hoàng Atk BOSS');
 }
+
+
+
+
 
 
 // Hàm xác định nhóm của một tùy chọn
@@ -1450,7 +1466,7 @@ function handlePlayerAttack(player, target) {
       console.log(`${target.name} đã chết, dừng tấn công.`);
       sendMessage(-4676989627, `${target.name} đã chết!`, { parse_mode: 'HTML' });
             // Dừng tất cả các báo cáo liên quan đến mục tiêu này
-      
+      if(target.boss === 1)dropItem(player,target)
       // Dừng tất cả các vòng lặp tấn công nếu boss chết
       if (target.name === "big boss" && target.hp <= 0) {
         stopAllAttacks();  // Dừng tất cả các vòng lặp tấn công khi boss chết
@@ -1472,6 +1488,114 @@ function handlePlayerAttack(player, target) {
 }
 
 
+// Hàm dropItem nhận vào đối tượng player
+function dropItem(player,target) {
+  // Tìm playerReport tương ứng với player.id
+  const playerReport = playerDamageReport.find(report => report.id === player.id);
+
+  // Kiểm tra nếu tìm thấy playerReport và lấy totalDamage
+  if (playerReport) {
+    const totalDamage = playerReport.totalDamage;
+    sendMessage(-4676989627, `Tổng sát thương của ${player.name}: ${totalDamage}`, { parse_mode: 'HTML' });
+    console.log(`Tổng sát thương của ${player.name}: ${totalDamage}`);
+        // Đặt lại totalDamage sau khi lấy giá trị
+    playerReport.totalDamage = 0;  // Đặt lại totalDamage về 0 (hoặc giá trị khác nếu cần)
+    
+    return totalDamage;  // Trả về tổng sát thương nếu tìm thấy
+  } else {
+    console.log("Không tìm thấy playerReport với id này.");
+    return 0;  // Trả về 0 nếu không tìm thấy
+  }
+}
+
+
+
+
+const items = {
+  "T1_spear": {
+    "otp0": "T1_spear",
+          "otp1": 10,
+          "otp2": 5,
+          "otp3": 8,
+          "otp4": 12,
+          "otp5": 1,
+          "otp6": 1
+  },
+  "skill_crit": {
+    "otp0": "skill_crit",
+          "otp1": 30,
+          "otp2": 1,
+          "otp3": 10,
+          "otp4": 3,
+          "otp5": 2,
+          "otp6": 9,
+          "otp7": 5,
+          "otp8": 1
+  },
+  "T5_frost_armor": {
+    "otp0": "T5_frost_armor",
+          "otp1": 20,
+          "otp2": 10,
+          "otp3": 15,
+          "otp4": 25,
+          "otp5": 3,
+          "otp6": 2
+  },
+  // Thêm các món đồ khác vào đây...
+};
+
+
+// Hàm thêm đồ vào inventory của người chơi
+function addItemToInventory(playerId, itemId) {
+  // Tìm người chơi có id tương ứng
+  const player = players.find(p => p.id === playerId);
+  
+  if (!player) {
+    console.log(`Không tìm thấy người chơi với id: ${playerId}.`);
+    return;
+  }
+  
+  // Kiểm tra xem itemId có tồn tại trong items hay không
+  if (!(itemId in items)) {
+    console.log(`Không tìm thấy món đồ với id: ${itemId}.`);
+    return;
+  }
+  
+  // Lấy thông tin món đồ từ items
+  const item = items[itemId];
+  
+  // Kiểm tra nếu món đồ đã có trong inventory
+  if (player.inventory.some(i => i.otp0 === itemId)) {
+    console.log(`Món đồ ${itemId} đã có trong inventory của ${player.name}.`);
+    return;
+  }
+
+  // Thêm món đồ vào inventory của người chơi
+  player.inventory.push(item);
+  
+  console.log(`Đã thêm món đồ ${itemId} vào inventory của ${player.name}.`);
+
+  // Cập nhật lại dữ liệu người chơi sau khi thêm món đồ
+  updatePlayerStat(playerId, { inventory: player.inventory })
+    .then((message) => {
+      console.log(message);  // In ra thông báo cập nhật thành công
+    })
+    .catch((err) => {
+      console.error(err);  // In ra lỗi nếu có
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1480,7 +1604,7 @@ function displayDamageReportplayer(player, target) {
   // Tính toán phần trăm máu của boss và target
   const bossHPPercentage = (boss.hp / 20000) * 100;  // 20000 là HP ban đầu của boss
   const targetPercentage = (target.hp / target.hp_max) * 100;  
-  
+  const bossHP = boss.hp
   // Chỉ hiển thị báo cáo cho người chơi cụ thể
   const targetPlayerId = player.id; // Giả sử bạn muốn hiển thị báo cáo cho người chơi này
 
@@ -1546,7 +1670,7 @@ let checkhpp = `${'👦🏻'}   ${players[0].hp}-------|-------   ${'🐐'}   ${
 
     // Chỉ hiển thị thông tin của boss nếu target.boss === 1
     
-      report += `| ${'🐉 Boss HP:'.padEnd(25, ' ')} | ${targetHP.toString().padStart(12, ' ')} | ${bossHPPercentage.toFixed(0)}% |`;
+      report += `| ${'🐉 Boss HP:'.padEnd(25, ' ')} | ${bossHP.toString().padStart(12, ' ')} | ${bossHPPercentage.toFixed(0)}% |`;
     
     report += bossAttack(players, boss) 
     report += '\n'
