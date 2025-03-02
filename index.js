@@ -455,6 +455,9 @@ function sendSyntaxExamples(chatId) {
   sendMessage(chatId, text, reply_markup); // Gửi tin nhắn với inline keyboard
 }
 
+
+const fetch = require('node-fetch'); // Import node-fetch
+
 // Hàm gửi tin nhắn phản hồi (reply)
 function sendMessage(chatId, text, reply_markup = {}) {
   const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -464,11 +467,10 @@ function sendMessage(chatId, text, reply_markup = {}) {
     reply_markup: reply_markup // Đảm bảo không gửi null
   };
 
- /// 
   let formattedMessage = text.replace(/\n/g, '<br>');
   // Gửi thông điệp đã được thay thế
   io.emit('chatMessage', formattedMessage);  // Sẽ gửi HTML với thẻ <br> cho xuống dòng
-///
+
   console.log('Sending message:', payload);  // Debug log: Xem payload
 
   fetch(url, {
@@ -482,6 +484,8 @@ function sendMessage(chatId, text, reply_markup = {}) {
   .then(data => console.log('Message sent:', data))
   .catch(error => console.error('Error sending message:', error));
 }
+
+
 
 // Hàm xử lý khi người dùng nhấn vào nút trong inline keyboard
 function handleCallbackQuery(callbackQuery) {
@@ -1294,14 +1298,15 @@ const bossInterval = setInterval(() => {
       boss:1,
     };
     
-    let textMessage = "Có boss mới\nhttps://b428ac2b-18c7-48a4-82ea-e4b045cd10b0-00-2n7uo6e4w9trh.pike.replit.dev/";
+    let textMessage = "Có boss mới\nhttps://same-mangrove-seed.glitch.me/";
 
-    sendMessage(playerId, textMessage)
+    sendMessage(6708647498, textMessage)
     console.log("Boss đã chết, tạo boss mới:", boss);
   } else {
     console.log(`Boss hiện tại: ${boss.name}, HP: ${boss.hp}`);
   }
 }, 20000);  // Lặp lại mỗi 20 giây (20000ms)
+
 
 
 
