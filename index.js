@@ -1382,70 +1382,11 @@ function recordPlayerAttack(player, target) {
   playerReport.attacks.push({ damage, isCrit, playertarget });  // Lưu playertarget cùng với thông tin đòn đánh
   playerReport.totalDamage += damage;
   checkSkillExpirationAndRemove(player);
-
+  displayDamageReportplayer(player, target)
   if (target.hp > 0) {
     target.hp -= damage;
   }
 }
-
-
-
-
-
-
-function displayDamageReport() {
-  // Tính toán phần trăm máu của boss
-  const bossHPPercentage = (boss.hp / 20000) * 100;  // 20000 là HP ban đầu của boss
-
-  let report = '===== Damage Report =====\n';
-  report += `Boss HP: ${bossHPPercentage.toFixed(2)}%\n`;  // Hiển thị % máu của boss
-  report += '|-Name------------------|-Total--------|\n';
-  report += '|--------------------------|--------------|-------------|\n';
-
-  playerDamageReport.forEach(playerReport => {
-    // Lấy tên người chơi và HP từ players
-    const player = players.find(p => p.id === playerReport.id);
-    const playerName = player.name;  // Tên người chơi
-    const playerHP = player.hp;  // Máu hiện tại của người chơi
-    const playerMaxHP = player.hp_max;  // Máu tối đa của người chơi
-    const playerHPPercentage = (playerHP / playerMaxHP) * 100;  // Phần trăm máu của người chơi
-
-    // Căn chỉnh tên và sát thương cho đều đặn và thêm biểu tượng cho tên và tổng sát thương
-    const name = `🎮 ${playerName} (${playerHPPercentage.toFixed(0)}%)`.padEnd(25, ' ');  // Thêm phần trăm máu người chơi vào tên
-    const total = `💥 ${playerReport.totalDamage.toString().padStart(12, ' ')}`;  // Thêm biểu tượng cho tổng sát thương
-
-    // Hiển thị từng đòn đánh trong giây hiện tại (bao gồm cả chí mạng và không chí mạng)
-const now = playerReport.attacks.map(attack => {
-  const damage = attack.damage.toFixed(0);  // Làm tròn sát thương
-  // Thêm emoji ⚡ khi chí mạng
-  const critSymbol = attack.isCrit ? `${damage} ⚡` : damage;
-
-  // Hiển thị các emoji tùy theo giá trị playertarget
-  let targetEmojis = '';
-  if (attack.playertarget === 1) {
-    targetEmojis = '👦🏻';  // Emoji cho playertarget = 1
-  } else if (attack.playertarget === 2) {
-    targetEmojis = '🐐';  // Emoji cho playertarget = 2
-  } else if (attack.playertarget === 3) {
-    targetEmojis = '🐣';  // Emoji cho playertarget = 3
-  }
-
-  // Kết hợp cả chí mạng và emoji playertarget
-  return `${critSymbol} ${targetEmojis}`;
-}).join(', ').padStart(35, ' ');  // Hiển thị tất cả các đòn tấn công
-
-
-    // Thêm dòng vào báo cáo
-    report += `| ${name} | ${total} | ${now} |\n`;
-    playerReport.attacks = [];  // Reset attacks cho lần tiếp theo
-  });
-
-  report += '===========================\n';
-  sendMessage(-4676989627, report, { parse_mode: 'HTML' });  // Gửi báo cáo qua Telegram bot với định dạng HTML
-  console.log(report);  // Hiển thị báo cáo
-}
-
-
 
 
 
@@ -1458,62 +1399,11 @@ let reportIntervals = [];
 function startBossFight(targetPlayer = null, a = null) {
   // Kiểm tra nếu có mục tiêu, nếu không thì chọn boss làm mục tiêu mặc định
   let target = targetPlayer || boss;  // Mặc định chọn boss làm mục tiêu nếu không có player mục tiêu
-
-  // Kiểm tra nếu target là người chơi, gán `isPlayer` là true, nếu là boss thì gán `isBoss` là true
-  if (target && target.hp > 0) {
-    target.isBoss = target.name && target.name.toLowerCase() === "big boss";  // Kiểm tra boss theo tên
-    target.isPlayer = !target.isBoss;  // Nếu không phải boss, là người chơi
-  }
-
-  // Bắt đầu việc cập nhật báo cáo mỗi 5 giây (5000ms)
-  const reportInterval = setInterval(() => {
-    if (target.hp <= 0) {  // Kiểm tra nếu mục tiêu (boss hoặc player) đã chết
-      displayDamageReport();  // Gửi báo cáo ngay lập tức khi mục tiêu chết
-      sendMessage(-4676989627, `${target.name} đã chết!`, { parse_mode: 'HTML' });
-
-      // Dừng tất cả các báo cáo liên quan đến mục tiêu này
-       if (target.boss === 1)clearAllReports();  // Gọi hàm dừng tất cả báo cáo
-      clearInterval(reportInterval);  // Dừng vòng lặp báo cáo hiện tại
-
-      // Dừng tất cả các vòng lặp tấn công nếu boss chết
-      if (target.name === "big boss" && target.hp <= 0) {
-        stopAllAttacks();  // Dừng tất cả các vòng lặp tấn công khi boss chết
-      }
-
-      // Dừng vòng tấn công của player nếu mục tiêu không phải boss
-      if (a && target.boss === 0) {
-        stopAttackOfPlayer(a);
-      }
-
-      return;  // Dừng hàm, không tiếp tục thực hiện
-    } else {
-      // Nếu mục tiêu còn sống, tiếp tục báo cáo
-      displayDamageReport();
-      //sendFourButtons(-4676989627);
-    }
-  }, 5000);  // Mỗi 5 giây gọi báo cáo
-
-  // Lưu ID của vòng lặp báo cáo vào mảng
-  reportIntervals.push(reportInterval);
-
-  // Xử lý các tấn công của người chơi hoặc tất cả người chơi
- // if (a && target.boss === 0) {
-     if (a) {
-    // Người chơi 'a' tấn công
+  
     handlePlayerAttack(a, target);
-  } else if (a === null && target.hp > 0) {
-    // Nếu không có player nào tấn công, tất cả người chơi tấn công
-    handleAllPlayersAttack(target);
-  }
 }
 
 
-// Hàm dừng tất cả các vòng lặp báo cáo
-function clearAllReports() {
-  reportIntervals.forEach(intervalId => clearInterval(intervalId));
-  reportIntervals = [];  // Xóa mảng chứa các vòng lặp báo cáo
-  console.log("Đã dừng tất cả các vòng lặp báo cáo.");
-}
 
 // Hàm dừng tất cả các vòng lặp tấn công
 function stopAllAttacks() {
@@ -1556,6 +1446,18 @@ function handlePlayerAttack(player, target) {
     if (target.hp <= 0) {  // Kiểm tra nếu mục tiêu đã chết
       clearInterval(attackInterval);  // Dừng vòng lặp tấn công nếu mục tiêu đã chết
       console.log(`${target.name} đã chết, dừng tấn công.`);
+      sendMessage(-4676989627, `${target.name} đã chết!`, { parse_mode: 'HTML' });
+            // Dừng tất cả các báo cáo liên quan đến mục tiêu này
+      
+      // Dừng tất cả các vòng lặp tấn công nếu boss chết
+      if (target.name === "big boss" && target.hp <= 0) {
+        stopAllAttacks();  // Dừng tất cả các vòng lặp tấn công khi boss chết
+      }
+
+      // Dừng vòng tấn công của player nếu mục tiêu không phải boss
+      if (target.boss === 0) {
+        stopAttackOfPlayer(player);
+      }
       return;  // Dừng vòng lặp tấn công
     }
 
@@ -1570,8 +1472,9 @@ function handlePlayerAttack(player, target) {
 
 
 
+
 function displayDamageReportplayer(player, target) {
-  // Tính toán phần trăm máu của boss
+  // Tính toán phần trăm máu của boss và target
   const bossHPPercentage = (boss.hp / 20000) * 100;  // 20000 là HP ban đầu của boss
   const targetPercentage = (target.hp / target.hp_max) * 100;  
   
@@ -1589,9 +1492,14 @@ function displayDamageReportplayer(player, target) {
     const playerMaxHP = player.hp_max;  // Máu tối đa của người chơi
     const playerHPPercentage = (playerHP / playerMaxHP) * 100;  // Phần trăm máu của người chơi
 
+    // Lấy tên và HP của target (boss)
+    const targetHP = target.hp;
+    const targetMaxHP = target.hp_max;
+    const targetHPPercentage = (targetHP / targetMaxHP) * 100;  // Phần trăm máu của target
+
     // Căn chỉnh tên và sát thương cho đều đặn và thêm biểu tượng cho tên và tổng sát thương
     const name = `🎮 ${playerName} (${playerHPPercentage.toFixed(0)}%)`.padEnd(25, ' ');  // Thêm phần trăm máu người chơi vào tên
-    const total = `💥 ${playerReport.totalDamage.toString().padStart(12, ' ')}`;  // Thêm biểu tượng cho tổng sát thương
+    const total = `💥`;  // Thêm biểu tượng cho tổng sát thương
 
     // Hiển thị từng đòn đánh trong giây hiện tại (bao gồm cả chí mạng và không chí mạng)
     const now = playerReport.attacks.map(attack => {
@@ -1613,18 +1521,43 @@ function displayDamageReportplayer(player, target) {
       return `${critSymbol} ${targetEmojis}`;
     }).join(', ').padStart(35, ' ');  // Hiển thị tất cả các đòn tấn công
 
-    // Thêm dòng vào báo cáo
+    // Xây dựng báo cáo
     let report = '';
-    report += `| ${name} | ${total} | ${now} |\n`;
-    playerReport.attacks = [];  // Reset attacks cho lần tiếp theo
+    report += `| ${name} | ${total}  ${now} |\n`;
+
+    // Chỉ hiển thị thông tin của boss nếu target.boss === 1
+    if (target.boss === 1) {
+      report += `| ${'🐉 Boss HP:'.padEnd(25, ' ')} | ${targetHP.toString().padStart(12, ' ')} | ${bossHPPercentage.toFixed(0)}% |\n`;
+    }
+
+    // Chỉ hiển thị thông tin của người chơi nếu target.boss === 0
+    if (target.boss === 0) {
+      // Thêm điều kiện để thay đổi emoji người chơi tùy theo thuộc tính
+      let playerEmojis = '';
+      if (target.name === 'tien') {  // Ví dụ: nếu người chơi có ID = 1
+        playerEmojis = '👦🏻';  // Emoji cho người chơi ID = 1
+      } else if (target.name === 'khi') {  // Nếu người chơi có ID = 2
+        playerEmojis = '🐐';  // Emoji cho người chơi ID = 2
+      } else {
+        playerEmojis = '🐣';  // Emoji mặc định cho những người chơi khác
+      }
+
+      report += `| ${playerEmojis}  HP:`.padEnd(25, ' ') + ` | ${playerHP.toString().padStart(12, ' ')} | ${playerHPPercentage.toFixed(0)}% |\n`;
+    }
 
     report += '===========================\n';
-    sendMessage(-4676989627, report, { parse_mode: 'HTML' });  // Gửi báo cáo qua Telegram bot với định dạng HTML
+
+    // Reset lại các đòn tấn công cho người chơi
+    playerReport.attacks = [];  
+
+    // Gửi báo cáo qua Telegram bot với định dạng HTML
+    sendMessage(-4676989627, report, { parse_mode: 'HTML' });  
     console.log(report);  // Hiển thị báo cáo
   } else {
     console.log("Không tìm thấy báo cáo cho người chơi này.");
   }
 }
+
 
 
 
@@ -1655,7 +1588,10 @@ async function initGame() {
     updatePlayersHpToMax();
     updateSkillsBasedOnInventory(players)
     updateAllPlayersStats(players)
-    startBossFight();  // Bắt đầu trận đấu với boss là mục tiêu mặc định
+    updatePlayersHpToMax();
+    startBossFight(boss,players[0]);
+    startBossFight(boss,players[1]);
+    startBossFight(boss,players[2]);
   } catch (error) {
     console.error(error);  // Nếu có lỗi khi lấy dữ liệu người chơi
   }
