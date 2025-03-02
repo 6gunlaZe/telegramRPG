@@ -1302,7 +1302,7 @@ const bossInterval = setInterval(() => {
       isAlive: true,     // Trạng thái sống của boss
       boss:1,
     };
-    
+    boss.hp = 20000
     let textMessage = "Có boss mới\nhttps://same-mangrove-seed.glitch.me/";
 
     sendMessage(6708647498, textMessage)
@@ -1393,7 +1393,6 @@ function recordPlayerAttack(player, target) {
 
 
 
-
 function displayDamageReport() {
   // Tính toán phần trăm máu của boss
   const bossHPPercentage = (boss.hp / 20000) * 100;  // 20000 là HP ban đầu của boss
@@ -1473,7 +1472,7 @@ function startBossFight(targetPlayer = null, a = null) {
       sendMessage(-4676989627, `${target.name} đã chết!`, { parse_mode: 'HTML' });
 
       // Dừng tất cả các báo cáo liên quan đến mục tiêu này
-      clearAllReports();  // Gọi hàm dừng tất cả báo cáo
+       if (target.boss === 1)clearAllReports();  // Gọi hàm dừng tất cả báo cáo
       clearInterval(reportInterval);  // Dừng vòng lặp báo cáo hiện tại
 
       // Dừng tất cả các vòng lặp tấn công nếu boss chết
@@ -1490,7 +1489,7 @@ function startBossFight(targetPlayer = null, a = null) {
     } else {
       // Nếu mục tiêu còn sống, tiếp tục báo cáo
       displayDamageReport();
-      sendFourButtons(-4676989627);
+      //sendFourButtons(-4676989627);
     }
   }, 5000);  // Mỗi 5 giây gọi báo cáo
 
@@ -1498,7 +1497,8 @@ function startBossFight(targetPlayer = null, a = null) {
   reportIntervals.push(reportInterval);
 
   // Xử lý các tấn công của người chơi hoặc tất cả người chơi
-  if (a && target.boss === 0) {
+ // if (a && target.boss === 0) {
+     if (a) {
     // Người chơi 'a' tấn công
     handlePlayerAttack(a, target);
   } else if (a === null && target.hp > 0) {
@@ -1506,6 +1506,7 @@ function startBossFight(targetPlayer = null, a = null) {
     handleAllPlayersAttack(target);
   }
 }
+
 
 // Hàm dừng tất cả các vòng lặp báo cáo
 function clearAllReports() {
@@ -1520,6 +1521,12 @@ function stopAllAttacks() {
   attackIntervals = [];  // Xóa mảng chứa các vòng lặp tấn công
   console.log("Boss đã chết, dừng tất cả các vòng lặp tấn công.");
 }
+
+
+
+
+
+
 
 
 // Hàm dừng tấn công của một người chơi cụ thể
