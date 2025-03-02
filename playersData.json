@@ -1,0 +1,270 @@
+{
+  "players": [
+    {
+      "id": 12345,
+      "id_bot": 6708647498,
+      "name": "tien",
+      "dame": 200,
+      "exp": 3000,
+      "boss": 0,
+      "inventory": [
+        {
+          "otp0": "T1_spear",
+          "otp1": 10,
+          "otp2": 5,
+          "otp3": 8,
+          "otp4": 12,
+          "otp5": 1,
+          "otp6": 1
+        },
+        {
+          "otp0": "skill_crit",
+          "otp1": 30,
+          "otp2": 1,
+          "otp3": 10,
+          "otp4": 3,
+          "otp5": 2,
+          "otp6": 9,
+          "otp7": 5,
+          "otp8": 1
+        },
+        {
+          "otp0": "T5_frost_armor",
+          "otp1": 20,
+          "otp2": 10,
+          "otp3": 15,
+          "otp4": 25,
+          "otp5": 3,
+          "otp6": 2
+        }
+      ],
+      "level": 5,
+      "health_max": 300,
+      "health": 300,
+      "hp_max": 300,
+      "hp": 300,
+      "mana": 1000,
+      "def-dame": 50,
+      "def-skill": 20,
+      "crit-%": 15,
+      "crit-x": 2,
+      "attach-speed": 1.5,
+      "attach-range": 5,
+      "NeTranh": 30,
+      "HutMau": 10,
+      "PhanDame": 5,
+      "trang-bi": {
+        "ao": {
+          "otp0": "T5_frost_armor",
+          "otp1": 20,
+          "otp2": 10,
+          "otp3": 15,
+          "otp4": 25,
+          "otp5": 3
+        },
+        "giap": {
+          "otp0": "T2_iron_shield",
+          "otp1": 20,
+          "otp2": 10,
+          "otp3": 15,
+          "otp4": 25,
+          "otp5": 3
+        },
+        "tay": {
+          "otp0": "T8_mythical_gloves",
+          "otp1": 5,
+          "otp2": 3,
+          "otp3": 4,
+          "otp4": 6,
+          "otp5": 7
+        },
+        "chan": {
+          "otp0": "T15_legendary_boots",
+          "otp1": 6,
+          "otp2": 4,
+          "otp3": 5,
+          "otp4": 7,
+          "otp5": 8
+        },
+        "vu-khi": {
+          "otp0": "T1_spear",
+          "otp1": 10,
+          "otp2": 5,
+          "otp3": 8,
+          "otp4": 12,
+          "otp5": 1
+        }
+      }
+    },
+    {
+      "id": 67890,
+      "id_bot": 12345,
+      "name": "khi",
+      "dame": 200,
+      "exp": 3000,
+      "boss": 0,
+      "inventory": [
+        {
+          "otp0": "bow",
+          "otp1": 15,
+          "otp2": 7,
+          "otp3": 10,
+          "otp4": 18,
+          "otp5": 20,
+          "otp6": 0
+        },
+        {
+          "otp0": "helmet",
+          "otp1": 25,
+          "otp2": 12,
+          "otp3": 18,
+          "otp4": 30,
+          "otp5": 35,
+          "otp6": 0
+        }
+      ],
+      "level": 10,
+      "health_max": 500,
+      "health": 500,
+      "hp": 500,
+      "hp_max": 500,
+      "mana": 200,
+      "def-dame": 60,
+      "def-skill": 25,
+      "crit-%": 20,
+      "crit-x": 2.5,
+      "attach-speed": 1.3,
+      "attach-range": 7,
+      "NeTranh": 50,
+      "HutMau": 15,
+      "PhanDame": 6,
+      "trang-bi": {
+        "ao": {
+          "otp0": "Áo của cung thủ",
+          "otp1": 15,
+          "otp2": 7,
+          "otp3": 10,
+          "otp4": 18,
+          "otp5": 20
+        },
+        "giap": {
+          "otp0": "Giáp nhẹ",
+          "otp1": 25,
+          "otp2": 12,
+          "otp3": 18,
+          "otp4": 30,
+          "otp5": 35
+        },
+        "tay": {
+          "otp0": "Găng tay cung thủ",
+          "otp1": 8,
+          "otp2": 5,
+          "otp3": 6,
+          "otp4": 9,
+          "otp5": 10
+        },
+        "chan": {
+          "otp0": "Giày chiến thuật",
+          "otp1": 9,
+          "otp2": 6,
+          "otp3": 7,
+          "otp4": 10,
+          "otp5": 12
+        },
+        "vu-khi": {
+          "otp0": "bow",
+          "otp1": 15,
+          "otp2": 7,
+          "otp3": 10,
+          "otp4": 18,
+          "otp5": 20
+        }
+      }
+    },
+    {
+      "id": 11223,
+      "id_bot": 12345,
+      "name": "ga",
+      "dame": 250,
+      "exp": 4000,
+      "boss": 0,
+      "inventory": [
+        {
+          "otp0": "T3_sword",
+          "otp1": 25,
+          "otp2": 15,
+          "otp3": 20,
+          "otp4": 30,
+          "otp5": 10,
+          "otp6": 1
+        },
+        {
+          "otp0": "shield",
+          "otp1": 30,
+          "otp2": 20,
+          "otp3": 25,
+          "otp4": 35,
+          "otp5": 40,
+          "otp6": 1
+        }
+      ],
+      "level": 15,
+      "health_max": 700,
+      "health": 700,
+      "hp": 700,
+      "hp_max": 700,
+      "mana": 250,
+      "def-dame": 70,
+      "def-skill": 30,
+      "crit-%": 25,
+      "crit-x": 3,
+      "attach-speed": 1.1,
+      "attach-range": 6,
+      "NeTranh": 60,
+      "HutMau": 20,
+      "PhanDame": 7,
+      "trang-bi": {
+        "ao": {
+          "otp0": "T10_mystic_armor",
+          "otp1": 20,
+          "otp2": 15,
+          "otp3": 18,
+          "otp4": 25,
+          "otp5": 30
+        },
+        "giap": {
+          "otp0": "T5_steel_shield",
+          "otp1": 30,
+          "otp2": 20,
+          "otp3": 25,
+          "otp4": 35,
+          "otp5": 40
+        },
+        "tay": {
+          "otp0": "T12_power_gloves",
+          "otp1": 10,
+          "otp2": 8,
+          "otp3": 12,
+          "otp4": 16,
+          "otp5": 18
+        },
+        "chan": {
+          "otp0": "T18_heavy_boots",
+          "otp1": 12,
+          "otp2": 10,
+          "otp3": 14,
+          "otp4": 18,
+          "otp5": 20
+        },
+        "vu-khi": {
+          "otp0": "T3_sword",
+          "otp1": 25,
+          "otp2": 15,
+          "otp3": 20,
+          "otp4": 30,
+          "otp5": 10
+        }
+      }
+    }
+  ]
+}
