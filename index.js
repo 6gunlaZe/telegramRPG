@@ -129,51 +129,56 @@ function handleOption(option) {
   }
 }
 
-// Các hàm thực thi tác vụ cho từng tùy chọn
+
+
 function performTaskForOption1() {
   console.log('Executing task for Option 1');
-  io.emit('chatMessage', 'Task for Option 1 executed!');
+  startBossFight(players[1],players[0]);
+  startBossFight(players[0],players[1]);
+  io.emit('chatMessage', 'Tiến Atk Hải');
 }
 
 function performTaskForOption2() {
   console.log('Executing task for Option 2');
-  io.emit('chatMessage', 'Task for Option 2 executed!');
+  io.emit('chatMessage', 'Tiến Atk Hoàng');
 }
 
 function performTaskForOption3() {
   console.log('Executing task for Option 3');
-  io.emit('chatMessage', 'Task for Option 3 executed!');
+   startBossFight(boss,players[0]);
+  io.emit('chatMessage', 'Tiến Atk BOSS');
 }
 
 function performTaskForOption4() {
   console.log('Executing task for Option 4');
-  io.emit('chatMessage', 'Task for Option 4 executed!');
+  io.emit('chatMessage', 'Hải Atk Tiến');
 }
 
 function performTaskForOption5() {
   console.log('Executing task for Option 5');
-  io.emit('chatMessage', 'Task for Option 5 executed!');
+  io.emit('chatMessage', 'Hải Atk Hoàng');
 }
 
 function performTaskForOption6() {
   console.log('Executing task for Option 6');
-  io.emit('chatMessage', 'Task for Option 6 executed!');
+  io.emit('chatMessage', 'Hải Atk BOSS');
 }
 
 function performTaskForOption7() {
   console.log('Executing task for Option 7');
-  io.emit('chatMessage', 'Task for Option 7 executed!');
+  io.emit('chatMessage', 'Hoàng Atk Tiến');
 }
 
 function performTaskForOption8() {
   console.log('Executing task for Option 8');
-  io.emit('chatMessage', 'Task for Option 8 executed!');
+  io.emit('chatMessage', 'Hoàng Atk Hải');
 }
 
 function performTaskForOption9() {
   console.log('Executing task for Option 9');
-  io.emit('chatMessage', 'Task for Option 9 executed!');
+  io.emit('chatMessage', 'Hoàng Atk BOSS');
 }
+
 
 // Hàm xác định nhóm của một tùy chọn
 function getOptionGroup(option) {
