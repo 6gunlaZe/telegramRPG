@@ -1297,7 +1297,7 @@ const bossInterval = setInterval(() => {
       id: "boss001",
       name: "Big Boss",
       hp: 20000,         // Máu của boss
-      damage: 150,       // Sát thương của boss
+      damage: 50,       // Sát thương của boss
       defense: 50,       // Phòng thủ của boss
       isAlive: true,     // Trạng thái sống của boss
       boss:1,
@@ -1320,7 +1320,7 @@ let boss = {
   id: "boss001",
   name: "Big Boss",
   hp: 20000,         // Máu của boss
-  damage: 150,       // Sát thương của boss
+  damage: 50,       // Sát thương của boss
   defense: 50,       // Phòng thủ của boss
   isAlive: true,     // Trạng thái sống của boss
   boss:1,
@@ -1475,6 +1475,7 @@ function handlePlayerAttack(player, target) {
 
 
 
+
 function displayDamageReportplayer(player, target) {
   // Tính toán phần trăm máu của boss và target
   const bossHPPercentage = (boss.hp / 20000) * 100;  // 20000 là HP ban đầu của boss
@@ -1545,10 +1546,10 @@ let checkhpp = `${'👦🏻'}   ${players[0].hp}-------|-------   ${'🐐'}   ${
 
     // Chỉ hiển thị thông tin của boss nếu target.boss === 1
     
-      report += `| ${'🐉 Boss HP:'.padEnd(25, ' ')} | ${targetHP.toString().padStart(12, ' ')} | ${bossHPPercentage.toFixed(0)}% |\n`;
+      report += `| ${'🐉 Boss HP:'.padEnd(25, ' ')} | ${targetHP.toString().padStart(12, ' ')} | ${bossHPPercentage.toFixed(0)}% |`;
     
-
-
+    report += bossAttack(players, boss) 
+    report += '\n'
 
     report += '===========================\n';
 
@@ -1614,6 +1615,41 @@ initGame();
 
 
 
+// Hàm tính toán sát thương mà mỗi người chơi nhận được
+function bossAttack(players, boss) {
+  // Lọc người chơi còn sống
+  const alivePlayers = players.filter(player => player.hp > 0);
+  const aliveCount = alivePlayers.length;
+
+  // Kiểm tra nếu không có người chơi sống
+  if (aliveCount === 0) {
+    return "No players alive";
+  }
+
+  // Nếu boss đã chết (hp <= 0), trả về chuỗi rỗng
+  if (boss.hp <= 0) {
+    return "";
+  }
+
+  // Chia đều sát thương cho các người chơi còn sống
+  const damagePerPlayer = boss.damage / aliveCount;
+
+  // Tạo mảng chứa sát thương thực tế mà mỗi người chơi nhận được
+  const result = players.map(player => {
+    if (player.hp > 0) {
+      // Tính sát thương thực sự mà người chơi nhận được sau khi trừ phòng thủ
+      const damageAfterDef = Math.max(0, damagePerPlayer - player["def-skill"]);
+      player.hp -= damageAfterDef
+      // Trả về sát thương mà người chơi nhận được
+      return damageAfterDef;
+    } else {
+      return 0;  // Nếu người chơi đã chết, bỏ qua
+    }
+  });
+
+  // Trả về kết quả dưới dạng chuỗi
+  return result.join("-");
+}
 
 
 
